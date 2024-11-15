@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\buildMultiTargeting\HealthSprintAnalyzer.WebApi.props" />
-</Project>
