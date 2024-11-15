@@ -1,0 +1,15 @@
+C:\Projects\HealthSprintAnalyzer.Backend\HealthSprintAnalyzer.Storage\bin\Debug\net8.0\HealthSprintAnalyzer.Storage.deps.json
+C:\Projects\HealthSprintAnalyzer.Backend\HealthSprintAnalyzer.Storage\bin\Debug\net8.0\HealthSprintAnalyzer.Storage.dll
+C:\Projects\HealthSprintAnalyzer.Backend\HealthSprintAnalyzer.Storage\bin\Debug\net8.0\HealthSprintAnalyzer.Storage.pdb
+C:\Projects\HealthSprintAnalyzer.Backend\HealthSprintAnalyzer.Storage\bin\Debug\net8.0\HealthSprintAnalyzer.Entities.dll
+C:\Projects\HealthSprintAnalyzer.Backend\HealthSprintAnalyzer.Storage\bin\Debug\net8.0\HealthSprintAnalyzer.Entities.pdb
+C:\Projects\HealthSprintAnalyzer.Backend\HealthSprintAnalyzer.Storage\obj\Debug\net8.0\HealthSprintAnalyzer.Storage.csproj.AssemblyReference.cache
+C:\Projects\HealthSprintAnalyzer.Backend\HealthSprintAnalyzer.Storage\obj\Debug\net8.0\HealthSprintAnalyzer.Storage.GeneratedMSBuildEditorConfig.editorconfig
+C:\Projects\HealthSprintAnalyzer.Backend\HealthSprintAnalyzer.Storage\obj\Debug\net8.0\HealthSprintAnalyzer.Storage.AssemblyInfoInputs.cache
+C:\Projects\HealthSprintAnalyzer.Backend\HealthSprintAnalyzer.Storage\obj\Debug\net8.0\HealthSprintAnalyzer.Storage.AssemblyInfo.cs
+C:\Projects\HealthSprintAnalyzer.Backend\HealthSprintAnalyzer.Storage\obj\Debug\net8.0\HealthSprintAnalyzer.Storage.csproj.CoreCompileInputs.cache
+C:\Projects\HealthSprintAnalyzer.Backend\HealthSprintAnalyzer.Storage\obj\Debug\net8.0\HealthSp.FA0C40EE.Up2Date
+C:\Projects\HealthSprintAnalyzer.Backend\HealthSprintAnalyzer.Storage\obj\Debug\net8.0\HealthSprintAnalyzer.Storage.dll
+C:\Projects\HealthSprintAnalyzer.Backend\HealthSprintAnalyzer.Storage\obj\Debug\net8.0\refint\HealthSprintAnalyzer.Storage.dll
+C:\Projects\HealthSprintAnalyzer.Backend\HealthSprintAnalyzer.Storage\obj\Debug\net8.0\HealthSprintAnalyzer.Storage.pdb
+C:\Projects\HealthSprintAnalyzer.Backend\HealthSprintAnalyzer.Storage\obj\Debug\net8.0\ref\HealthSprintAnalyzer.Storage.dll
