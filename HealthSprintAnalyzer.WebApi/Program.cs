@@ -6,6 +6,7 @@ using HealthSprintAnalyzer.Contracts.Services;
 using HealthSprintAnalyzer.Engine.Services.DataUploaders;
 using HealthSprintAnalyzer.Engine.Contracts;
 using HealthSprintAnalyzer.Engine.Parser;
+using SprintHealthAnalyzer.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
@@ -22,6 +23,8 @@ options.UseNpgsql(MyConfig.GetValue<string>($"ConnectionStrings:{MachineNameHelp
 
 builder.Services.AddScoped<IFileUploadService, FileDataUploader>();
 builder.Services.AddScoped<IEntityParser, CsvParser>();
+builder.Services.AddScoped<ISprintAnalyzer, SprintAnalyzer>();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();  // Добавляем Swagger генератор документации
 builder.Services.AddControllers();

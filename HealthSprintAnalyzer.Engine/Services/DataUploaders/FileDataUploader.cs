@@ -53,17 +53,28 @@ public class FileDataUploader : IFileUploadService
 			dataset.ParsingTime = watch.Elapsed;
 			dataset.From = sprints.MinBy(x => x.SprintStartDate).SprintStartDate;
 			dataset.To = sprints.MaxBy(x => x.SprintEndDate).SprintEndDate;
-			dataset.Teams = tickets.DistinctBy(x => x.TicketNumber).Select(x => x.TicketNumber.Split('-')[0]).ToList();
+			dataset.Teams = tickets.Select(x => x.Area).Distinct().ToList();
 			
-			await sprintRepository.AddOrUpdateManyAsync(sprints);
-			
-			dataset.SprintsIds = sprints.Select(x => x.Id).ToList();
-			
-			await datasetRepository.AddOrUpdateManyAsync(new List<Dataset> { dataset });
-			await ticketRepository.AddOrUpdateManyAsync(tickets);
-			await ticketHistoryRepository.AddOrUpdateManyAsync(ticketHistories);
+			try
+			{
+				await sprintRepository.AddOrUpdateManyAsync(sprints);
+				
+				dataset.SprintsIds = sprints.Select(x => x.Id).ToList();
+				
+				await datasetRepository.AddOrUpdateManyAsync(new List<Dataset> { dataset });
+				await ticketRepository.AddOrUpdateManyAsync(tickets);
+				await ticketHistoryRepository.AddOrUpdateManyAsync(ticketHistories);	
+			}
+			catch (Exception e)
+			{
+				throw new InvalidOperationException("Parsing failed", e);
+			}
 			
 			scope.Complete();
+		}
+		catch (InvalidOperationException e)
+		{
+			throw new InvalidOperationException("Upload Data to DB failed", e);
 		}
 		catch (Exception e)
 		{

@@ -15,6 +15,5 @@ public class Sprint
 	public DateTime SprintStartDate { get; set; }
 	public DateTime SprintEndDate { get; set; }
 	public List<long> EntityIds { get; set; } = new List<long>();
-	public List<Ticket> Tickets { get; set; }
-	
+	public List<Ticket> Tickets { get; set; }	
 }

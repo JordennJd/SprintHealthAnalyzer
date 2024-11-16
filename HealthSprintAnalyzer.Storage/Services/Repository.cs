@@ -8,7 +8,7 @@ namespace HealthSprintAnalyzer.Storage.Repositories
 {
 	public class Repository<T> : IRepository<T> where T : class
 	{
-		private readonly ApplicationDbContext _context;
+		protected readonly ApplicationDbContext _context;
 		private readonly DbSet<T> _dbSet;
 
 		public Repository(ApplicationDbContext context)
@@ -27,7 +27,7 @@ namespace HealthSprintAnalyzer.Storage.Repositories
 			return await _dbSet.ToListAsync();
 		}
 
-		public async Task<IEnumerable<T>> GetByFilterAsync(Expression<Func<T, bool>> filter)
+		public virtual async Task<IEnumerable<T>> GetByFilterAsync(Expression<Func<T, bool>> filter)
 		{
 			return await _dbSet.Where(filter).ToListAsync();
 		}
@@ -67,16 +67,37 @@ namespace HealthSprintAnalyzer.Storage.Repositories
 	public class DatasetRepository : Repository<Dataset>, IDatasetRepository
 	{
 		public DatasetRepository(ApplicationDbContext context) : base(context) { }
+		
+		public override async Task<IEnumerable<Dataset>> GetByFilterAsync(Expression<Func<Dataset, bool>> filter)
+		{
+			return await _context.Datasets
+			.Where(filter).ToListAsync();
+		}
 	}
 
 	public class SprintRepository : Repository<Sprint>, ISprintRepository
 	{
-		public SprintRepository(ApplicationDbContext context) : base(context) { }
+		public SprintRepository(ApplicationDbContext context) : base(context) 
+		{}
+		
+		public override Task<IEnumerable<Sprint>> GetByFilterAsync(Expression<Func<Sprint, bool>> filter)
+		{
+			return Task.FromResult(_context.Sprints
+			.Include(x => x.Tickets)
+			.Where(filter).AsEnumerable());
+		}
 	}
 
 	public class TicketRepository : Repository<Ticket>, ITicketRepository
 	{
 		public TicketRepository(ApplicationDbContext context) : base(context) { }
+		
+		public override Task<IEnumerable<Ticket>> GetByFilterAsync(Expression<Func<Ticket, bool>> filter)
+		{
+			return Task.FromResult(_context.Tickets
+			.Include(x => x.History)
+			.Where(filter).AsEnumerable());
+		}
 	}
 
 	public class TicketHistoryRepository : Repository<TicketHistory>, ITicketHistoryRepository

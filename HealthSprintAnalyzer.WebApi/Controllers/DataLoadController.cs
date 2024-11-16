@@ -5,7 +5,7 @@ namespace HealthSprintAnalyzer.WebApi.Controllers
 {
 	[ApiController]
 	[Route("api/[controller]/[action]")]
-	public class DataLoadController : ControllerBase
+	public class DataLoadController : Controller
 	{
 		private readonly IFileUploadService dataLoadService;
 
