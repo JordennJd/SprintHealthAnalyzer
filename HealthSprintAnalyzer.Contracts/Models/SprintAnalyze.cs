@@ -4,17 +4,13 @@ using System.Collections.Generic;
 namespace HealthSprintAnalyzer.Contracts.Models;
 
 public record SprintAnalyze(
-	double Hp,
 	string SprintName,
-	List<TaskMoving> TaskMoving
+	List<Metrics> Metrics
 );
 
-public record TaskMoving(
+public record Metrics(
 	int Day,
-	double PercentOfOutDatedTasks,
-	int ClosedTaskCount,
-	int ClosedTaskPower,
-	double PercentOfCanceledTasks,
-	double PercentOfCreatedTasks,
-	double PercentOfBacklogChanging
+	int CreatedTickets,
+	int InWorkTickets,
+	int DoneTickets
 );

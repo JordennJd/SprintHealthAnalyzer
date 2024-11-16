@@ -29,4 +29,10 @@ public class Ticket
 	public string? Workgroup { get; set; }
 	public string? Resolution { get; set; }
 	public List<TicketHistory> History { get; set; } = new List<TicketHistory>();
+	
+	private const string _task = "Задача";
+	private const string _bug = "Дефект";
+
+	public bool IsTask() => Type == _task;
+	public bool IsBug() => Type == _bug;
 }
