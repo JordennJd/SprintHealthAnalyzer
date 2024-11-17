@@ -1,0 +1,3 @@
+[submodule "sprint-lens"]
+	path = sprint-lens
+	url = https://github.com/pank-su/sprint-lens.git
