@@ -21,9 +21,14 @@ public class SprintAnalyzer : ISprintAnalyzer
 	{
 		var sprints = await GetData(request);
 		
-		if (!sprints.Any()) throw new ArgumentException("No sprints found");
+		var answer = new List<SprintAnalyze>();
 		
-		return new List<SprintAnalyze>(){AnalyzeSprint(sprints[0], request.To)};
+		if (!sprints.Any()) throw new ArgumentException("No sprints found");
+		sprints.ForEach(sprint => 
+		{
+			answer.Add(AnalyzeSprint(sprint, request.To));
+		});
+		return answer;
 	}
 	
 	private SprintAnalyze AnalyzeSprint(Sprint sprint, DateTime date)
