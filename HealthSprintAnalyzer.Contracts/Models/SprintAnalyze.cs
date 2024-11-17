@@ -5,12 +5,10 @@ namespace HealthSprintAnalyzer.Contracts.Models;
 
 public record SprintAnalyze(
 	string SprintName,
+	List<Metrics> Metrics,
 	DateTime From,
 	DateTime To
-)
-{
-	public List<Metrics> Metrics { get; set; } = new();
-};
+);
 
 public record Metrics(
 	int Day,
