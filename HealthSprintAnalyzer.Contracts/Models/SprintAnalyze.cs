@@ -10,12 +10,15 @@ public record SprintAnalyze(
 
 public record Metrics(
 	int Day,
-	int CreatedTickets,
-	int InWorkTickets,
-	int DoneTickets,
-	int RemoveTickets,
+	int CreatedTicketPoints,
+	int InWorkTicketPoints,
+	int DoneTicketPoints,
+	int RemoveTicketPoints,
 	double BacklogchangedPercent,
-	int BlocketTickets,
-	int ExcludedTickets,
-	int AddedTickets
+	int BlocketTicketPoints,
+	int ExcludedTicketPoints,
+	int AddedTicketPoints,
+	int AddedToday,
+	int RemovedToday,
+	
 );
