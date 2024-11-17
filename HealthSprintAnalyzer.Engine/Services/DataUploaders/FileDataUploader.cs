@@ -92,7 +92,7 @@ public class FileDataUploader : IFileUploadService
 	
 	public async Task<DatasetView> GetById(string id) 
 	{ 
-		return await GetDatasetView(await datasetRepository.GetByIdAsync(Guid.Parse(id)));
+		return await GetDatasetView(await datasetRepository.GetByIdAsync(id));
 	}
 	
 	private async Task<DatasetView> GetDatasetView(Dataset dataset) 

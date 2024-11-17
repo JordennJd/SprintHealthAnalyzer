@@ -8,7 +8,7 @@ namespace HealthSprintAnalyzer.Storage.Repositories
 {
 	public interface IRepository<T> where T : class
 	{
-		Task<T> GetByIdAsync(Guid id);
+		Task<T> GetByIdAsync(string id);
 		Task<IEnumerable<T>> GetAllAsync();
 		Task<IEnumerable<T>> GetByFilterAsync(Expression<Func<T, bool>> filter);
 		Task AddAsync(T entity);
