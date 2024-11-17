@@ -8,7 +8,11 @@ public record SprintAnalyze(
 	List<Metrics> Metrics,
 	DateTime From,
 	DateTime To
-);
+)
+
+{
+	public List<Metrics> Metrics {get;set;} = new List<Metrics>();
+}
 
 public record Metrics(
 	int Day,

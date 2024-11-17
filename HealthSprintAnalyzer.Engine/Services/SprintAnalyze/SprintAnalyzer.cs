@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using HealthSprintAnalyzer.Contracts.Models;
 using HealthSprintAnalyzer.Contracts.Services;
 using HealthSprintAnalyzer.Storage.Repositories;
@@ -26,7 +27,7 @@ public class SprintAnalyzer : ISprintAnalyzer
 		if (!sprints.Any()) throw new ArgumentException("No sprints found");
 		sprints.ForEach(sprint => 
 		{
-			answer.Add(AnalyzeSprint(sprint, request.To, 
+			answer.Add(AnalyzeSprint(sprint,
 			request.WeightUniformity,
 			request.WeightRemovedPoints,
 			request.WeightLateDone,
@@ -38,22 +39,38 @@ public class SprintAnalyzer : ISprintAnalyzer
 		return answer;
 	}
 	
-	private SprintAnalyze AnalyzeSprint(Sprint sprint, DateTime date,
-	 double? weightUniformity, double? weightRemovedPoints, double? weightLateDone,
-	  double? weightAddedTasks, double? weightVelocity, double? weightUnfinishedTasks, double? weightLargeTasks)
+
+	public SprintAnalyze AnalyzeSprint(
+		Sprint sprint, 
+		double? weightUniformity, double? weightRemovedPoints, double? weightLateDone,
+		double? weightAddedTasks, double? weightVelocity, double? weightUnfinishedTasks, double? weightLargeTasks)
 	{
 		var SprintAnalyze = new SprintAnalyze(sprint.SprintName, new List<Metrics>(), sprint.SprintStartDate, sprint.SprintEndDate);
-		
-		var day = 1;
+
 		var past = new PastInfo();
-		for (DateTime currentDate = sprint.SprintStartDate; currentDate <= sprint.SprintEndDate; currentDate = currentDate.AddDays(1))
-		{
-			SprintAnalyze.Metrics.Add(GetMetrics(sprint, currentDate, past, day, SprintAnalyze.Metrics, weightUniformity, weightRemovedPoints, weightLateDone, weightAddedTasks, weightVelocity, weightUnfinishedTasks, weightLargeTasks));
-			day++;
-		}
-		
+	
+		var metricsBag = new ConcurrentBag<Metrics>();
+
+		int day = 0;
+
+		Parallel.ForEach(
+			Enumerable.Range(0, (sprint.SprintEndDate - sprint.SprintStartDate).Days), 
+			new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount }, 
+			i =>
+			{
+				DateTime currentDate = sprint.SprintStartDate.AddDays(i);
+				int currentDay = Interlocked.Increment(ref day); // Increment day in a thread-safe manner
+			
+				var metric = GetMetrics(sprint, currentDate, past, currentDay, SprintAnalyze.Metrics, weightUniformity, weightRemovedPoints, weightLateDone, weightAddedTasks, weightVelocity, weightUnfinishedTasks, weightLargeTasks);
+				metricsBag.Add(metric);
+			});
+
+		// Transfer the items from the ConcurrentBag back to the list
+		SprintAnalyze.Metrics.AddRange(metricsBag);
+		SprintAnalyze.Metrics = SprintAnalyze.Metrics.OrderBy(x => x.Day).ToList();
 		return SprintAnalyze;
 	}
+
 	
 	public IEnumerable<Ticket> GetSumOfCreatedTicketsOnDate(Sprint sprint, DateTime date)
 	{
@@ -136,12 +153,12 @@ public class SprintAnalyzer : ISprintAnalyzer
 		var sumOfAddedToSprint = GetAddedToSprintTicketsOnDate(sprint, date).Count();
 		var sumOfLeavedFromSprintPoints = GetLeavedFromSprintTicketsOnDate(sprint, date).HoursSum();
 		var sumOfAddedToSprintPoints = GetAddedToSprintTicketsOnDate(sprint, date).HoursSum();
-		if(day != 1)
-			past.BacklogHoursBeforeTwoDays += sumOfAddedToSprintPoints + sumOfLeavedFromSprintPoints;
 		
-		var backlogchangedPercent = (double)past.BacklogHoursBeforeTwoDays / (commonPoints + past.BacklogHoursBeforeTwoDays);
-		if(day == 1) backlogchangedPercent = 0;
+		var backlogchangedPercent = (double)(sumOfAddedToSprintPoints + sumOfLeavedFromSprintPoints) / commonPoints;
 		
+		if(day == 1)
+		backlogchangedPercent += sumOfAddedToSprintPoints + sumOfLeavedFromSprintPoints;
+				
 		return new Metrics(day, sumOfCreatedPoints.HoursSum(), percentOfCreatedPoints, sumOfInWorkPoints.HoursSum(), percentOfInWorkPoints,
 		sumOfDonePoints.HoursSum(), percentOfDonePoints, sumOfRemovedPoints.HoursSum(), percentOfRemovedPoints, backlogchangedPercent, 0, sumOfLeavedFromSprint,
 		sumOfLeavedFromSprintPoints, sumOfAddedToSprint, sumOfAddedToSprintPoints, CalculateSprintHealth(sprint, date,
