@@ -21,6 +21,8 @@ public class SprintAnalyzer : ISprintAnalyzer
 	{
 		var sprints = await GetData(request);
 		
+		if (!sprints.Any()) throw new ArgumentException("No sprints found");
+		
 		return new List<SprintAnalyze>(){AnalyzeSprint(sprints[0], request.To)};
 	}
 	
@@ -32,18 +34,7 @@ public class SprintAnalyzer : ISprintAnalyzer
 		
 		for (DateTime currentDate = sprint.SprintStartDate; currentDate <= sprint.SprintEndDate; currentDate = currentDate.AddDays(1))
 		{
-			SprintAnalyze.Metrics.Add(new Metrics(
-			
-				day,
-				GetSumOfCreatedTicketsOnDate(sprint, currentDate),
-				GetSumOfInWorkTicketsOnDate(sprint, currentDate),
-				GetSumOfDoneTicketsOnDate(sprint, currentDate),
-				GetSumOfRemovedTicketsOnDate(sprint, currentDate),
-				0,
-				0,
-				GetSumOfLeavedFromSprintTicketsOnDate(sprint, currentDate),
-				0
-			));
+			SprintAnalyze.Metrics.Add(GetMetrics(sprint, currentDate, day));
 			day++;
 		}
 		
@@ -74,10 +65,16 @@ public class SprintAnalyzer : ISprintAnalyzer
 		.Where(x => x.IsRemovedOnDate(date, sprint.SprintEndDate) && x.IsInSprintOnDate(sprint.SprintName, date, sprint.SprintEndDate)).HoursSum();
 	}
 	
-	private int GetSumOfLeavedFromSprintTicketsOnDate(Sprint sprint, DateTime date)
+	private IEnumerable<Ticket> GetLeavedFromSprintTicketsOnDate(Sprint sprint, DateTime date)
 	{
 		return sprint.Tickets
-		.Where(x => x.IsInSprintOnDate(sprint.SprintName, date.AddDays(-1), sprint.SprintEndDate) && !x.IsInSprintOnDate(sprint.SprintName, date, sprint.SprintEndDate)).HoursSum();
+		.Where(x => x.IsInSprintOnDate(sprint.SprintName, date.AddDays(-1), sprint.SprintEndDate) && !x.IsInSprintOnDate(sprint.SprintName, date, sprint.SprintEndDate));
+	}
+	
+	private IEnumerable<Ticket> GetAddedToSprintTicketsOnDate(Sprint sprint, DateTime date)
+	{
+		return sprint.Tickets
+			.Where(x => !x.IsInSprintOnDate(sprint.SprintName, date.AddDays(-1), sprint.SprintEndDate) && x.IsInSprintOnDate(sprint.SprintName, date, sprint.SprintEndDate));
 	}
 	
 	private async Task<List<Sprint>> GetData(SprintAnalyzeRequest request)
@@ -94,5 +91,29 @@ public class SprintAnalyzer : ISprintAnalyzer
 		});
 		
 		return sprints;
+	}
+	
+	private Metrics GetMetrics(Sprint sprint, DateTime date, int day)
+	{
+		var sumOfCreatedPoints = GetSumOfCreatedTicketsOnDate(sprint, date);
+		var sumOfInWorkPoints = GetSumOfInWorkTicketsOnDate(sprint, date);
+		var sumOfDonePoints = GetSumOfDoneTicketsOnDate(sprint, date);
+		var sumOfRemovedPoints = GetSumOfRemovedTicketsOnDate(sprint, date);
+		var commonPoints = sumOfCreatedPoints + sumOfInWorkPoints + sumOfDonePoints + sumOfRemovedPoints;
+		
+		var percentOfCreatedPoints = (double)sumOfCreatedPoints / commonPoints * 100;
+		var percentOfInWorkPoints = (double)sumOfInWorkPoints / commonPoints * 100;
+		var percentOfDonePoints = (double)sumOfDonePoints / commonPoints * 100;
+		var percentOfRemovedPoints = (double)sumOfRemovedPoints / commonPoints * 100;
+		
+		var sumOfLeavedFromSprint = GetLeavedFromSprintTicketsOnDate(sprint, date).Count();
+		var sumOfAddedToSprint = GetAddedToSprintTicketsOnDate(sprint, date).Count();
+		var sumOfLeavedFromSprintPoints = GetLeavedFromSprintTicketsOnDate(sprint, date).HoursSum();
+		var sumOfAddedToSprintPoints = GetAddedToSprintTicketsOnDate(sprint, date).HoursSum();
+
+		
+		return new Metrics(day, sumOfCreatedPoints, percentOfCreatedPoints, sumOfInWorkPoints, percentOfInWorkPoints,
+		sumOfDonePoints, percentOfDonePoints, sumOfRemovedPoints, percentOfRemovedPoints, 0, 0, sumOfLeavedFromSprint,
+		sumOfLeavedFromSprintPoints, sumOfAddedToSprint, sumOfAddedToSprintPoints, Random.Shared.Next());
 	}
 }
