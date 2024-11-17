@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  webapi:
+    build:
+      context: .
+      dockerfile: Dockerfile  # Убедитесь, что Dockerfile находится в корне проекта
+    ports:
+      - "8080:8080"  # Прокси порт 8080 на 80 внутри контейнера (порт, на котором будет работать Web API)
+    depends_on:
+      - postgres
+    networks:
+      - health_network
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres_db1
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=mysecretpassword
+      - POSTGRES_DB=postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - health_network
+
+volumes:
+  postgres_data:
+
+networks:
+  health_network:
+    driver: bridge

@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HealthSprintAnalyzer.WebApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241116102728_Init")]
+    [Migration("20241116203125_Init")]
     partial class Init
     {
         /// <inheritdoc />

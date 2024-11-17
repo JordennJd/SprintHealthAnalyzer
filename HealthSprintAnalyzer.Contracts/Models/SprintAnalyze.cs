@@ -12,5 +12,10 @@ public record Metrics(
 	int Day,
 	int CreatedTickets,
 	int InWorkTickets,
-	int DoneTickets
+	int DoneTickets,
+	int RemoveTickets,
+	double BacklogchangedPercent,
+	int BlocketTickets,
+	int ExcludedTickets,
+	int AddedTickets
 );

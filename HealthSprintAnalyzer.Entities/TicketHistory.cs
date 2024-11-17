@@ -9,6 +9,8 @@ public class TicketHistory
 	private const string _separator = " -> ";
 	private const string _status = "Статус";
 	private const string _resolution = "Резолюция";
+	private const string _created = "CREATED";
+	private const string _sprint = "Спринт";
 
 	public TicketHistory() { }
 
@@ -34,6 +36,18 @@ public class TicketHistory
 		return new Change(splitted[0], splitted[1], TicketId, HistoryDate ?? default);	
 	}
 	
+	public Change GetSprintChange()
+	{
+		if(HistoryPropertyName != _sprint)
+		{
+			return null;
+		}
+		
+		var splitted = HistoryChange?.Split(_separator) ?? ["<empty>", "<empty>"];
+			
+		return new Change(splitted[0], splitted[1], TicketId, HistoryDate ?? default);	
+	}
+	
 	public Change GetResolutionChange()
 	{
 		if(HistoryPropertyName != _resolution)
@@ -44,6 +58,22 @@ public class TicketHistory
 		var splitted = HistoryChange?.Split(_separator) ?? ["<empty>", "<empty>"];
 			
 		return new Change(splitted[0], splitted[1], TicketId, HistoryDate ?? default);	
+	}
+	
+	public bool IsStatusChange() => HistoryPropertyName == _status;
+	
+	public bool IsSprintChange() => HistoryPropertyName == _sprint;
+	
+	public bool IsResolutionChange() => HistoryPropertyName == _resolution;
+	
+	public bool IsChangeTypeCreated() => HistoryChangeType == _created;
+
+	public bool Equals(TicketHistory other)
+	{
+		if (other == null) return false;
+
+		// Сравниваем только необходимые поля: TicketId и HistoryDate
+		return this.TicketId == other.TicketId && this.HistoryDate == other.HistoryDate;
 	}
 }
 

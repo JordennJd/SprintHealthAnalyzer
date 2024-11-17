@@ -1,3 +1,4 @@
+using HealthSprintAnalyzer.Contracts.Models;
 using HealthSprintAnalyzer.Contracts.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,12 +16,22 @@ namespace HealthSprintAnalyzer.WebApi.Controllers
 		}
 		
 		[HttpPost]
-		public async Task<IActionResult> UploadFile(IFormFile sprintFile, IFormFile ticketFile, IFormFile ticketHistoryFile)
+		public async Task<DatasetView> UploadFile(IFormFile sprintFile, IFormFile ticketFile, IFormFile ticketHistoryFile)
 		{
-			await dataLoadService
+			return await dataLoadService
 			.UploadFileAsync(sprintFile.OpenReadStream(), ticketFile.OpenReadStream(), ticketHistoryFile.OpenReadStream());
-			
-			return Ok();
+		}
+		
+		[HttpGet]
+		public async Task<List<DatasetView>> GetDatasets()
+		{
+			return await dataLoadService.GetAll();
+		}
+		
+		[HttpGet]
+		public async Task<DatasetView> GetById(string id)
+		{
+			return await dataLoadService.GetById(id);
 		}
 	}
 }

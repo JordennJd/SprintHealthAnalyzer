@@ -40,9 +40,9 @@ if (app.Environment.IsDevelopment())
 app.MapControllers();
 app.UseRouting();
 app.UseMiddleware<ErrorHandlingMiddleware>();
-app.UseHttpsRedirection();
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-
+System.Console.WriteLine("dsadsad");
+System.Console.WriteLine(MyConfig.GetValue<string>($"ConnectionStrings:{MachineNameHelper.GetMachineName()}"));
 app.Run();
 
 

@@ -16,30 +16,45 @@ public static class TicketHelper
 	
 	public static string GetLastStatusOnDate(this Ticket ticket, DateTime date, DateTime deadlineDate)
 	{
-		var history = ticket.History;
+		var history = ticket.History.OrderBy(x => x.HistoryDate);
 		
-		if (!history.Any())
+		if (history.Any(x => x.IsChangeTypeCreated()) && !history.Any(x => x.IsStatusChange() && x.HistoryDate.Value.Date <= date.Date && x.HistoryDate.Value.Date <= deadlineDate.Date))
 		{
-			return ticket.Status;
+			return "Создано";
 		}
 		
-		return history
-		.Where(x => x.GetStatusChange() != null && x.HistoryDate <= date && x.HistoryDate <= deadlineDate).Select(x => x.GetStatusChange())
+		var status = history
+		.Where(x => x.GetStatusChange() != null && x.HistoryDate.Value.Date <= date.Date && x.HistoryDate.Value.Date <= deadlineDate.Date).Select(x => x.GetStatusChange())
 		.MaxBy(x => x.ChangeDate)?.StatusTo ?? "<empty>";
+		
+		return status;
+	}
+	
+	public static string GetLastSprintOnDate(this Ticket ticket, DateTime date, DateTime deadlineDate)
+	{
+		var history = ticket.History.OrderBy(x => x.HistoryDate);
+		
+		var sprint = history
+		.Where(x => x.GetSprintChange() != null && x.HistoryDate.Value.Date <= date.Date && x.HistoryDate.Value.Date <= deadlineDate.Date).Select(x => x.GetSprintChange())
+		.MaxBy(x => x.ChangeDate)?.StatusTo ?? "<empty>";
+		
+		return sprint;
 	}
 	
 	public static string GetLastResoluitionOnDate(this Ticket ticket, DateTime date, DateTime deadlineDate)
 	{
 		var history = ticket.History;
 		
-		if (!history.Any())
+		if (!history.Any(x => x.IsResolutionChange() && string.IsNullOrEmpty(ticket.Resolution) && x.HistoryDate.Value.Date <= date.Date && x.HistoryDate.Value.Date <= deadlineDate.Date))
 		{
-			return ticket.Resolution;
+			return "<empty>";
 		}
 		
+		if(!history.Any(x => x.IsResolutionChange() && string.IsNullOrEmpty(ticket.Resolution) && x.HistoryDate.Value.Date <= date.Date && x.HistoryDate.Value.Date <= deadlineDate.Date)) return ticket!.Resolution!;
+		
 		return history
-		.Where(x => x.GetResolutionChange() != null && x.HistoryDate <= date && x.HistoryDate <= deadlineDate).Select(x => x.GetStatusChange())
-		.MaxBy(x => x.ChangeDate)?.StatusTo ?? "<empty>";
+		.Where(x => x.GetResolutionChange() != null && x.HistoryDate.Value.Date <= date.Date && x.HistoryDate.Value.Date <= deadlineDate.Date).Select(x => x.GetStatusChange())
+		.MaxBy(x => x?.ChangeDate ?? default)?.StatusTo ?? "<empty>";
 	}
 	
 	public static bool IsCreatedOnDate(this Ticket ticket, DateTime date, DateTime deadlineDate)
@@ -49,7 +64,7 @@ public static class TicketHelper
 	
 	public static bool IsInProgressOnDate(this Ticket ticket, DateTime date, DateTime deadlineDate)
 	{		
-		return !ticket.IsDoneOnDate(date, deadlineDate) && !ticket.IsRemovedOnDate(date, deadlineDate);
+		return !ticket.IsDoneOnDate(date, deadlineDate) && !ticket.IsRemovedOnDate(date, deadlineDate) && !ticket.IsCreatedOnDate(date, deadlineDate);
 	}
 	
 	public static bool IsDoneOnDate(this Ticket ticket, DateTime date, DateTime deadlineDate)
@@ -73,9 +88,16 @@ public static class TicketHelper
 		return false;
 	}
 	
-	public static int DaysSum(this IEnumerable<Ticket> ticket)
+	public static int HoursSum(this IEnumerable<Ticket> ticket)
 	{		
-		return ticket.Select(x => x.Estimation?.Days ?? 0)
+		return ticket.Select(x => x.Estimation?.Hours ?? 0)
 		.Sum();
 	}
+	
+	public static bool IsInSprintOnDate(this Ticket ticket, string sprintName, DateTime Date, DateTime deadlineDate)
+	{
+		var lastSprint = ticket.GetLastSprintOnDate(Date, deadlineDate);
+		
+		return lastSprint == sprintName;
+	}	
 }

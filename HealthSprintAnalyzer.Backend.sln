@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthSprintAnalyzer.Entiti
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthSprintAnalyzer.WebApi", "HealthSprintAnalyzer.WebApi\HealthSprintAnalyzer.WebApi.csproj", "{3036FEF3-A8D5-4F08-B32D-D72B4254EC3B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthSprintAnalzyer.WorkBench", "HealthSprintAnalzyer.WorkBench\HealthSprintAnalzyer.WorkBench.csproj", "{0532B6C1-FCFB-4DCE-8893-22996500A1DF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,5 +44,9 @@ Global
 		{3036FEF3-A8D5-4F08-B32D-D72B4254EC3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3036FEF3-A8D5-4F08-B32D-D72B4254EC3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3036FEF3-A8D5-4F08-B32D-D72B4254EC3B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0532B6C1-FCFB-4DCE-8893-22996500A1DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0532B6C1-FCFB-4DCE-8893-22996500A1DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0532B6C1-FCFB-4DCE-8893-22996500A1DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0532B6C1-FCFB-4DCE-8893-22996500A1DF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

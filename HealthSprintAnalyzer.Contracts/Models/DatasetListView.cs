@@ -1,6 +1,6 @@
 namespace HealthSprintAnalyzer.Contracts.Models;
 
-public record DatasetListView(
+public record DatasetView(
 	string Id,
 	DateTime LoadTime,
 	TimeSpan ParsingTime,
@@ -8,5 +8,5 @@ public record DatasetListView(
 	DateTime To,
 	List<string> Teams = null,
 	List<long> SprintsIds = null,
-	List<SprintView> Sprints = null
+	List<string> Sprints = null
 );

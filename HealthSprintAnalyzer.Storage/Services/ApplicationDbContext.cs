@@ -11,6 +11,7 @@ public class ApplicationDbContext : DbContext
 
 	public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) 
 	{
+		Database.Migrate();
 	}
 
 	public DbSet<Dataset> Datasets { get; set; }
