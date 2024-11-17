@@ -47,8 +47,8 @@ public class FileDataUploader : IFileUploadService
 			dataset.Id = Guid.NewGuid().ToString();
 			
 			var sprints = await sprintTask;
-			var tickets = (await ticketsTask).DistinctBy(x => x.EntityId).ToList();
-			var ticketHistories = (await ticketHistoriesTask).Where(x => tickets.Select(y => y.EntityId).Contains(x.TicketId)).ToList();
+			var tickets = (await ticketsTask)?.DistinctBy(x => x.EntityId)?.ToList() ?? new List<Ticket>();
+			var ticketHistories = (await ticketHistoriesTask)?.Where(x => tickets.Select(y => y.EntityId).Contains(x.TicketId))?.ToList() ?? new List<TicketHistory>();
 									
 			dataset.From = sprints.MinBy(x => x.SprintStartDate).SprintStartDate;
 			dataset.To = sprints.MaxBy(x => x.SprintEndDate).SprintEndDate;

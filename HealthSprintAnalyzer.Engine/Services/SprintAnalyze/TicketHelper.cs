@@ -2,6 +2,7 @@
 using static HealthSprintAnalyzer.Engine.Services.SprintAnalyze.Constants.Constants;
 
 using SprintHealthAnalyzer.Entities;
+using Microsoft.Identity.Client;
 
 public static class TicketHelper
 {
@@ -18,13 +19,13 @@ public static class TicketHelper
 	{
 		var history = ticket.History.OrderBy(x => x.HistoryDate);
 		
-		if (history.Any(x => x.IsChangeTypeCreated()) && !history.Any(x => x.IsStatusChange() && x.HistoryDate.Value.Date <= date.Date && x.HistoryDate.Value.Date <= deadlineDate.Date))
+		if (history.Any(x => x.IsChangeTypeCreated()) && !history.Any(x => x.IsStatusChange() && x.HistoryDate.HasValue && x.HistoryDate.Value.Date  <= date.Date && x.HistoryDate.Value.Date <= deadlineDate.Date))
 		{
 			return "Создано";
 		}
 		
 		var status = history
-		.Where(x => x.GetStatusChange() != null && x.HistoryDate.Value.Date <= date.Date && x.HistoryDate.Value.Date <= deadlineDate.Date).Select(x => x.GetStatusChange())
+		.Where(x => x.GetStatusChange() != null && x.HistoryDate.HasValue && x.HistoryDate.Value.Date <= date.Date && x.HistoryDate.Value.Date <= deadlineDate.Date).Select(x => x.GetStatusChange())
 		.MaxBy(x => x.ChangeDate)?.StatusTo ?? "<empty>";
 		
 		return status;
@@ -45,15 +46,13 @@ public static class TicketHelper
 	{
 		var history = ticket.History;
 		
-		if (!history.Any(x => x.IsResolutionChange() && string.IsNullOrEmpty(ticket.Resolution) && x.HistoryDate.Value.Date <= date.Date && x.HistoryDate.Value.Date <= deadlineDate.Date))
+		if (!history.Any(x => x.IsResolutionChange() && x.HistoryDate.Value.Date <= date.Date && x.HistoryDate.Value.Date <= deadlineDate.Date))
 		{
-			return "<empty>";
+			return string.IsNullOrEmpty(ticket.Resolution) ? "<empty>" : ticket.Resolution;
 		}
-		
-		if(!history.Any(x => x.IsResolutionChange() && string.IsNullOrEmpty(ticket.Resolution) && x.HistoryDate.Value.Date <= date.Date && x.HistoryDate.Value.Date <= deadlineDate.Date)) return ticket!.Resolution!;
-		
+				
 		return history
-		.Where(x => x.GetResolutionChange() != null && x.HistoryDate.Value.Date <= date.Date && x.HistoryDate.Value.Date <= deadlineDate.Date).Select(x => x.GetStatusChange())
+		.Where(x => x.GetResolutionChange() != null && x.HistoryDate.HasValue && x.HistoryDate.Value.Date <= date.Date && x.HistoryDate.Value.Date <= deadlineDate.Date).Select(x => x.GetResolutionChange())
 		.MaxBy(x => x?.ChangeDate ?? default)?.StatusTo ?? "<empty>";
 	}
 	
@@ -87,6 +86,23 @@ public static class TicketHelper
 		
 		return false;
 	}
+	
+	public static DateTime FindDateWhenTicketAddedInSprint(this Ticket ticket, Sprint sprint)
+	{
+		var history = ticket.History;
+		
+		return history.Where(x => x.HistoryDate.HasValue && x.HistoryDate.Value.Date <= sprint.SprintStartDate.Date)
+		.Where(x => x.GetSprintChange() != null && x.GetSprintChange().StatusTo == sprint.SprintName).Select(x => x.HistoryDate)
+		.MaxBy(x => x.Value) ?? DateTime.MaxValue;
+	}
+	
+	public static bool IsSpintChangedFromDate(this Ticket ticket, DateTime date)
+	{
+		var history = ticket.History;
+
+		return history.Where(x => x.HistoryDate.HasValue && x.HistoryDate.Value.Date > date.Date).Any(x => x.GetSprintChange() != null);
+	}
+
 	
 	public static int HoursSum(this IEnumerable<Ticket> ticket)
 	{		

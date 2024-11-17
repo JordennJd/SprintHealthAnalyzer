@@ -4,8 +4,8 @@ var ticket = new Ticket
 {
 	EntityId = 1,
 	Area = "Area",
-	Type = "Task",
-	Resolution = "Resolved",
+	Type = "Задача",
+	Resolution = "Резолюция",
 	Estimation = TimeSpan.FromDays(1),
 	History = new List<TicketHistory>()
 	{
@@ -16,22 +16,22 @@ var ticket = new Ticket
 			HistoryChangeType = "CREATED",
 			HistoryChange = null
 		},
-		// new TicketHistory
-		// {
-		// 	HistoryDate = DateTime.Now,
-		// 	HistoryPropertyName = "Резолюция",
-		// 	HistoryChangeType = "FIELD_CHANGED",
-		// 	HistoryChange = " -> <empty>"
-		// },
 		new TicketHistory
 		{
-			HistoryDate = DateTime.Now.AddDays(1),
+			HistoryDate = DateTime.Now,
+			HistoryPropertyName = "Резолюция",
+			HistoryChangeType = "FIELD_CHANGED",
+			HistoryChange = "<empty> -> Отклонено"
+		},
+		new TicketHistory
+		{
+			HistoryDate = DateTime.Now,
 			HistoryPropertyName = "Статус",
 			HistoryChangeType = "FIELD_CHANGED",
-			HistoryChange = "created -> inProgress"
+			HistoryChange = "created -> done"
 		}
 	}
 	
 };
 
-Console.WriteLine(ticket.GetLastStatusOnDate(DateTime.Now, DateTime.Now));
+Console.WriteLine(ticket.IsRemovedOnDate(DateTime.Now, DateTime.Now));

@@ -11,7 +11,7 @@ public static class Constants
 	
 	public static readonly string[] RemovedResolutionForTask = ["Отклонено", "Отменено инициатором", "Дубликат"];
 	
-	public static readonly string[] RemovedResolutionForBug = ["Отклонен исполнителем"];
+	public static readonly string[] RemovedResolutionForBug = ["Отклонен исполнителем", "rejectedByThePerformer"];
 
 
 }
