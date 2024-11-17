@@ -19,6 +19,6 @@ public record Metrics(
 	int ExcludedTicketPoints,
 	int AddedTicketPoints,
 	int AddedToday,
-	int RemovedToday,
+	int RemovedToday
 	
 );
